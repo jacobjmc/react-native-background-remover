@@ -1,6 +1,6 @@
 {
   "name": "@jacobjmc/react-native-background-remover",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Enhanced React Native package for removing backgrounds from images containing people, objects, animals, and more using Apple's Vision framework",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
