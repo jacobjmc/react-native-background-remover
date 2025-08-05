@@ -1,6 +1,6 @@
 {
   "name": "@jacobjmc/react-native-background-remover",
-  "version": "0.4.0",
+  "version": "1.0.1",
   "description": "Enhanced React Native package for removing backgrounds from images containing people, objects, animals, and more using Apple's Vision framework",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
@@ -54,14 +54,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atlj/react-native-background-remover.git"
+    "url": "git+https://github.com/jacobjmc/react-native-background-remover.git"
   },
-  "author": "Burak Güner <burak.guner@callstack.com> (https://github.com/atlj)",
+  "author": "Jacob McMillen <jacob@jmcillen.com> (https://github.com/jacobjmc)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/atlj/react-native-background-remover/issues"
+    "url": "https://github.com/jacobjmc/react-native-background-remover/issues"
   },
-  "homepage": "https://github.com/atlj/react-native-background-remover#readme",
+  "homepage": "https://github.com/jacobjmc/react-native-background-remover#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"

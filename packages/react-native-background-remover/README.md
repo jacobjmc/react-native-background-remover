@@ -1,5 +1,7 @@
 # react-native-background-remover
 
+> **Note:** This is a fork of [atlj/react-native-background-remover](https://github.com/atlj/react-native-background-remover) with enhanced features and expanded object detection capabilities.
+
 Enhanced React Native package that uses MLKit on Android and Apple's Vision framework on iOS to remove backgrounds from images containing people, objects, animals, and more.
 
 <div align="center">
@@ -9,13 +11,13 @@ Enhanced React Native package that uses MLKit on Android and Apple's Vision fram
 ## Installation
 
 ```sh
-yarn add react-native-background-remover
+yarn add @jacobjmc/react-native-background-remover
 ```
 
 ## Usage
 
 ```js
-import { removeBackground } from 'react-native-background-remover';
+import { removeBackground } from '@jacobjmc/react-native-background-remover';
 
 // You can get the imageURI from the camera or the gallery.
 const backgroundRemovedImageURI = removeBackground(imageURI);
