@@ -37,27 +37,28 @@ public class BackgroundRemoverSwift: NSObject {
                         return
                     }
                     
-                    // Combine all detected foreground objects into a single mask
-                    var combinedMask: CIImage?
+                    // Combine all detected foreground objects into a single image
+                    var combinedImage: CIImage?
                     let context = CIContext()
-                    
+
                     for result in results {
                         do {
-                            // Generate mask for all instances in this observation
+                            // Generate a masked image for all instances in this observation.
+                            // This returns a pre-masked image with a transparent background.
                             let instanceMaskPixelBuffer = try result.generateMaskedImage(
                                 ofInstances: result.allInstances,
                                 from: imageRequestHandler,
                                 croppedToInstancesExtent: false
                             )
                             
-                            let instanceMask = CIImage(cvPixelBuffer: instanceMaskPixelBuffer)
+                            let instanceImage = CIImage(cvPixelBuffer: instanceMaskPixelBuffer)
                             
-                            if combinedMask == nil {
-                                combinedMask = instanceMask
+                            if combinedImage == nil {
+                                combinedImage = instanceImage
                             } else {
-                                // Combine masks using maximum compositing to union all foreground objects
-                                combinedMask = combinedMask?.applyingFilter("CIMaximumCompositing", 
-                                                                          parameters: [kCIInputBackgroundImageKey: instanceMask])
+                                // Composite the new instance image over the existing combined image.
+                                combinedImage = instanceImage.applyingFilter("CISourceOverCompositing",
+                                                                          parameters: [kCIInputBackgroundImageKey: combinedImage!])
                             }
                         } catch {
                             // Continue with other instances if one fails
@@ -65,24 +66,18 @@ public class BackgroundRemoverSwift: NSObject {
                         }
                     }
                     
-                    guard let finalMask = combinedMask else {
-                        reject("BackgroundRemover", "Failed to generate combined mask", NSError(domain: "BackgroundRemover", code: 8))
+                    guard var maskedImage = combinedImage else {
+                        reject("BackgroundRemover", "Failed to generate combined image", NSError(domain: "BackgroundRemover", code: 8))
                         return
                     }
                     
-                    // Ensure mask is properly scaled to match original image
-                    var scaledMask = finalMask
-                    if finalMask.extent != originalImage.extent {
-                        let scaleX = originalImage.extent.width / finalMask.extent.width
-                        let scaleY = originalImage.extent.height / finalMask.extent.height
-                        scaledMask = finalMask.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+                    // The output of generateMaskedImage is already at the correct scale of the original image.
+                    // No scaling should be needed if croppedToInstancesExtent is false.
+                    if maskedImage.extent != originalImage.extent {
+                        let scaleX = originalImage.extent.width / maskedImage.extent.width
+                        let scaleY = originalImage.extent.height / maskedImage.extent.height
+                        maskedImage = maskedImage.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
                     }
-                    
-                    // Invert the mask since VNGenerateForegroundInstanceMaskRequest returns inverted masks
-                    let invertedMask = scaledMask.applyingFilter("CIColorInvert")
-                    
-                    // Apply the inverted mask to remove background
-                    let maskedImage = originalImage.applyingFilter("CIBlendWithMask", parameters: [kCIInputMaskImageKey: invertedMask])
                     
                     // Convert to UIImage via CGImage for better control
                     guard let cgMaskedImage = context.createCGImage(maskedImage, from: maskedImage.extent) else {
